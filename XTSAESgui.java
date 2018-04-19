@@ -14,6 +14,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -31,7 +33,7 @@ public class XTSAESgui implements ActionListener{
 	private Button encryptButton;
 	private Button decryptButton;
 	private final int KEY_LENGTH = 64;
-	
+	private Pattern p = Pattern.compile("[a-fA-F0-9]+$");
 	
 	/**
 	 * Launch the application.
@@ -160,5 +162,12 @@ public class XTSAESgui implements ActionListener{
 			
 		}
 	}
-
+	
+	public boolean hexValidator(String str){
+		Matcher m = p.matcher(str);
+		if(str.length() <64){
+			return false;
+		}
+		return m.find();
+	}
 }
