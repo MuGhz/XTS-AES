@@ -18,7 +18,7 @@ public class Xts{
 		return this.key;
 	}
 
-	public String encode()	{
+	public byte[] encode()	{
 		int len = this.plaintext.length;
 		byte[] enc = new byte[len];
 		//fullblock
@@ -35,7 +35,7 @@ public class Xts{
 		else	{
 			int diff = len%16;
 			byte[] last = new byte[len-diff];
-			for(int i = diff; i > -1; i--)	{
+			for(int i = diff; i > 0; i--)	{
 				last[diff-i] = this.plaintext[len-i];
 			}
 			int d = 0;
@@ -63,11 +63,10 @@ public class Xts{
 				enc[last_empty_block+i] = final_block[i];
 			}
 		}
-		String result = Util.toHEX(enc);
-		return result;
+		return enc;
 	}
 
-	public String decode()	{
+	public byte[] decode()	{
 		int len = this.plaintext.length;
 		byte[] enc = new byte[len];
 		//fullblock
@@ -84,7 +83,7 @@ public class Xts{
 		else	{
 			int diff = len%16;
 			byte[] last = new byte[len-diff];
-			for(int i = diff; i > -1; i--)	{
+			for(int i = diff; i > 0; i--)	{
 				last[diff-i] = this.plaintext[len-i];
 			}
 			int d = 0;
@@ -112,7 +111,6 @@ public class Xts{
 				enc[last_empty_block+i] = final_block[i];
 			}
 		}
-		String result = Util.toHEX(enc);
-		return result;
+		return enc;
 	}
 }
