@@ -6,5 +6,6 @@ public class Trial	{
 		System.out.println(x.getPlainText());
 		System.out.println(x.getKeyOne());
 		System.out.println(x.getKeyTwo());
+		System.out.println("DONE")
 	}
 }
