@@ -42,6 +42,7 @@ public class Xts{
 			for(int i = 0; i < len-diff; i += 16)	{
 				byte[] block = Arrays.copyOfRange(this.plaintext,i,i+16);
 				byte[] encrypted = XTSAES.encryptBlock(this.key,i,block);
+				//if its 1 block before final block
 				if(i+16+diff >= len)	{
 					int c = 0;
 					for(int j = len-diff; j < len; j++)	{
@@ -51,7 +52,9 @@ public class Xts{
 						last[j] = encrypted[j];
 					}
 					d = i+16;
-				} else	{
+				}
+				//other block
+				else	{
 					for(int j = i; j < i+16; j++)	{
 						enc[j] = encrypted[j%16];
 					}
@@ -69,14 +72,14 @@ public class Xts{
 
 	public byte[] decrypt()	{
 		int len = this.plaintext.length;
-		byte[] enc = new byte[len];
+		byte[] dec = new byte[len];
 		//fullblock
 		if(len % 16 == 0)	{
 			for(int i = 0; i < len; i += 16)	{
 				byte[] block = Arrays.copyOfRange(this.plaintext,i,i+16);
 				byte[] encrypted = XTSAES.decryptBlock(this.key,i,block);
 				for(int j = i; j < i+16; j++)	{
-					enc[j] = encrypted[j%16];
+					dec[j] = encrypted[j%16];
 				}
 			}
 		}
@@ -90,28 +93,29 @@ public class Xts{
 			int d = 0;
 			for(int i = 0; i < len-diff; i += 16)	{
 				byte[] block = Arrays.copyOfRange(this.plaintext,i,i+16);
-				byte[] encrypted = XTSAES.decryptBlock(this.key,i,block);
 				if(i+16+diff >= len)	{
+					byte[] decrypted = XTSAES.decryptBlock(this.key,i+16,block);
 					int c = 0;
 					for(int j = len-diff; j < len; j++)	{
-						enc[j] = encrypted[c++];
+						dec[j] = decrypted[c++];
 					}
 					for(int j = c; j < 16; j++)	{
-						last[j] = encrypted[j];
+						last[j] = decrypted[j];
 					}
-					d = i+16;
+					d = i;
 				} else	{
+					byte[] decrypted = XTSAES.decryptBlock(this.key,i,block);
 					for(int j = i; j < i+16; j++)	{
-						enc[j] = encrypted[j%16];
+						dec[j] = decrypted[j%16];
 					}
 				}
 			}
 			byte[] final_block = XTSAES.decryptBlock(this.key,d,last);
 			int last_empty_block = len-diff-16;
 			for(int i = 0; i < 16; i++)	{
-				enc[last_empty_block+i] = final_block[i];
+				dec[last_empty_block+i] = final_block[i];
 			}
 		}
-		return enc;
+		return dec;
 	}
 }
