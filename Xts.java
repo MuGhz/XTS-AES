@@ -18,7 +18,7 @@ public class Xts{
 		return this.key;
 	}
 
-	public byte[] encode()	{
+	public byte[] encrypt()	{
 		int len = this.plaintext.length;
 		byte[] enc = new byte[len];
 		//fullblock
@@ -42,7 +42,7 @@ public class Xts{
 			for(int i = 0; i < len-diff; i += 16)	{
 				byte[] block = Arrays.copyOfRange(this.plaintext,i,i+16);
 				byte[] encrypted = XTSAES.encryptBlock(this.key,i,block);
-				if(i+16 > len)	{
+				if(i+16+diff >= len)	{
 					int c = 0;
 					for(int j = len-diff; j < len; j++)	{
 						enc[j] = encrypted[c++];
@@ -60,13 +60,14 @@ public class Xts{
 			byte[] final_block = XTSAES.encryptBlock(this.key,d,last);
 			int last_empty_block = len-diff-16;
 			for(int i = 0; i < 16; i++)	{
+				System.out.println(last_empty_block+i);
 				enc[last_empty_block+i] = final_block[i];
 			}
 		}
 		return enc;
 	}
 
-	public byte[] decode()	{
+	public byte[] decrypt()	{
 		int len = this.plaintext.length;
 		byte[] enc = new byte[len];
 		//fullblock
@@ -90,7 +91,7 @@ public class Xts{
 			for(int i = 0; i < len-diff; i += 16)	{
 				byte[] block = Arrays.copyOfRange(this.plaintext,i,i+16);
 				byte[] encrypted = XTSAES.decryptBlock(this.key,i,block);
-				if(i+16 > len)	{
+				if(i+16+diff >= len)	{
 					int c = 0;
 					for(int j = len-diff; j < len; j++)	{
 						enc[j] = encrypted[c++];

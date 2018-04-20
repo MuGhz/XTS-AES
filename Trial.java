@@ -7,13 +7,12 @@ public class Trial	{
 			(byte)0x14, (byte)0x24,(byte)0x14, (byte)0x24,
 			(byte)0x14, (byte)0x24,(byte)0x14, (byte)0x24,
 		};
-		//dibawah contoh kalau outputnya string. DEPRECATED
 
 		Xts x = new Xts(input,"AASSDDFFGGHHJJKKAASSDDFFGGHHJJKKAASSDDFFGGHHJJKKAASSDDFFGGHHJJKK");
 		System.out.println(Util.toHEX(input));
-		byte[] enz = x.encode();
+		byte[] enz = x.encrypt();
 		System.out.println(Util.toHEX(enz));
 		Xts out = new Xts(enz,"AASSDDFFGGHHJJKKAASSDDFFGGHHJJKKAASSDDFFGGHHJJKKAASSDDFFGGHHJJKK");
-		System.out.println(Util.toHEX(out.decode()));
+		System.out.println(Util.toHEX(out.decrypt()));
 	}
 }
