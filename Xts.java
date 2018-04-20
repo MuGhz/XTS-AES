@@ -1,5 +1,3 @@
-import XTSAES;
-
 public class Xts{
 
 	byte[] plaintext;
@@ -10,12 +8,12 @@ public class Xts{
 
 	public Xts(byte[] plaintext, String key)	{
 		this.plaintext = plaintext;
-		this.key1 = key.substring(0,8)
-		this.key2 = key.substring(8,16)
+		this.key1 = key.substring(0,8);
+		this.key2 = key.substring(8,16);
 	}
 
 	public byte[] getPlainText()	{
-		return this.plaintext
+		return this.plaintext;
 	}
 
 	public String getKeyOne()	{
@@ -27,12 +25,16 @@ public class Xts{
 	}
 
 	public String encode()	{
-		
-		return "OK"
+		if(plaintext.length() % 2 == 0)	{
+			for(int i = 0; i < plaintext.length(); i += 16)	{
+
+			}	
+		}
+		return "OK";
 	}
 
 	public String decode()	{
 		
-		return "OK"
+		return "OK";
 	}
 }
