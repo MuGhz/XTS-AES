@@ -25,7 +25,7 @@ public class Xts{
 		if(len % 16 == 0)	{
 			for(int i = 0; i < len; i += 16)	{
 				byte[] block = Arrays.copyOfRange(this.plaintext,i,i+16);
-				byte[] encrypted = XTSAES.encryptBlock(this.key,i,block);
+				byte[] encrypted = XTSAES.encryptBlock(this.key,i/16,block);
 				for(int j = i; j < i+16; j++)	{
 					enc[j] = encrypted[j%16];
 				}
@@ -34,14 +34,14 @@ public class Xts{
 		//handle ciphertext stealing
 		else	{
 			int diff = len%16;
-			byte[] last = new byte[len-diff];
+			byte[] last = new byte[16];
 			for(int i = diff; i > 0; i--)	{
 				last[diff-i] = this.plaintext[len-i];
 			}
 			int d = 0;
 			for(int i = 0; i < len-diff; i += 16)	{
 				byte[] block = Arrays.copyOfRange(this.plaintext,i,i+16);
-				byte[] encrypted = XTSAES.encryptBlock(this.key,i,block);
+				byte[] encrypted = XTSAES.encryptBlock(this.key,i/16,block);
 				//if its 1 block before final block
 				if(i+16+diff >= len)	{
 					int c = 0;
@@ -51,7 +51,7 @@ public class Xts{
 					for(int j = c; j < 16; j++)	{
 						last[j] = encrypted[j];
 					}
-					d = i+16;
+					d = (i+16)/16;
 				}
 				//other block
 				else	{
@@ -60,10 +60,10 @@ public class Xts{
 					}
 				}
 			}
+			System.out.println(last.length);
 			byte[] final_block = XTSAES.encryptBlock(this.key,d,last);
 			int last_empty_block = len-diff-16;
 			for(int i = 0; i < 16; i++)	{
-				System.out.println(last_empty_block+i);
 				enc[last_empty_block+i] = final_block[i];
 			}
 		}
@@ -77,7 +77,7 @@ public class Xts{
 		if(len % 16 == 0)	{
 			for(int i = 0; i < len; i += 16)	{
 				byte[] block = Arrays.copyOfRange(this.plaintext,i,i+16);
-				byte[] encrypted = XTSAES.decryptBlock(this.key,i,block);
+				byte[] encrypted = XTSAES.decryptBlock(this.key,i/16,block);
 				for(int j = i; j < i+16; j++)	{
 					dec[j] = encrypted[j%16];
 				}
@@ -86,7 +86,7 @@ public class Xts{
 		//handle ciphertext stealing
 		else	{
 			int diff = len%16;
-			byte[] last = new byte[len-diff];
+			byte[] last = new byte[16];
 			for(int i = diff; i > 0; i--)	{
 				last[diff-i] = this.plaintext[len-i];
 			}
@@ -94,7 +94,7 @@ public class Xts{
 			for(int i = 0; i < len-diff; i += 16)	{
 				byte[] block = Arrays.copyOfRange(this.plaintext,i,i+16);
 				if(i+16+diff >= len)	{
-					byte[] decrypted = XTSAES.decryptBlock(this.key,i+16,block);
+					byte[] decrypted = XTSAES.decryptBlock(this.key,(i+16)/16,block);
 					int c = 0;
 					for(int j = len-diff; j < len; j++)	{
 						dec[j] = decrypted[c++];
@@ -102,7 +102,7 @@ public class Xts{
 					for(int j = c; j < 16; j++)	{
 						last[j] = decrypted[j];
 					}
-					d = i;
+					d = i/16;
 				} else	{
 					byte[] decrypted = XTSAES.decryptBlock(this.key,i,block);
 					for(int j = i; j < i+16; j++)	{
