@@ -60,7 +60,6 @@ public class Xts{
 					}
 				}
 			}
-			System.out.println(last.length);
 			byte[] final_block = XTSAES.encryptBlock(this.key,d,last);
 			int last_empty_block = len-diff-16;
 			for(int i = 0; i < 16; i++)	{
