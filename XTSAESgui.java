@@ -28,11 +28,11 @@ public class XTSAESgui implements ActionListener{
 	private JFrame frame;
 	private Label titleLabel;
 	private Label keyLabel;
-	private Label saveToLabel;
 	private TextField keyText;
 	private TextField saveTo;
 	private TextField inputText;
 	private Button inputFileButton;
+	private Button outputFileButton;
 	private Button encryptButton;
 	private Button decryptButton;
 	private final int KEY_LENGTH = 64;
@@ -101,12 +101,11 @@ public class XTSAESgui implements ActionListener{
 		gbl.setConstraints(inputText, gbc);
 		actionPanel.add(inputText);
 		
-		saveToLabel = new Label("Output");
-		saveToLabel.setAlignment(Label.LEFT);
-		saveToLabel.setFont(labelFont);
+		outputFileButton = new Button("Save To");
+		outputFileButton.addActionListener(this);
 		gbc.gridwidth = 1;
-		gbl.setConstraints(saveToLabel, gbc);
-		actionPanel.add(saveToLabel);
+		gbl.setConstraints(outputFileButton, gbc);
+		actionPanel.add(outputFileButton);
 		
 		saveTo = new TextField(64);
 		saveTo.setEnabled(false);
@@ -152,17 +151,23 @@ public class XTSAESgui implements ActionListener{
 			JFileChooser fc = new JFileChooser();
 			fc.showOpenDialog(frame);
 			File file = fc.getSelectedFile();
-			String[] filePath = file.getAbsolutePath().split("\\.");
+			//String[] filePath = file.getAbsolutePath().split("\\.");
 			input = file.getAbsolutePath();
-			output = file.getAbsolutePath().substring(0,file.getAbsolutePath().length() - (filePath[filePath.length-1].length()+1))+"-output."+filePath[filePath.length-1];
+			//output = file.getAbsolutePath().substring(0,file.getAbsolutePath().length() - (filePath[filePath.length-1].length()+1))+"-output."+filePath[filePath.length-1];
 			inputText.setText(input);
-			saveTo.setText(output);
 			try {
 				data = Files.readAllBytes(Paths.get(file.toURI()));
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
+		}else if(source == outputFileButton){
+			JFileChooser fc = new JFileChooser();
+			fc.showSaveDialog(frame);
+			File file = fc.getSelectedFile();
+			output = file.getAbsolutePath();
+			saveTo.setText(output);
 			
 		}else if(source == encryptButton){
 			String key = keyText.getText();
@@ -171,6 +176,8 @@ public class XTSAESgui implements ActionListener{
 			try {
 				FileOutputStream stream = new FileOutputStream(output);
 				stream.write(res);
+				stream.flush();
+				stream.close();
 				JOptionPane.showMessageDialog(frame, "encrypt success");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -184,6 +191,9 @@ public class XTSAESgui implements ActionListener{
 			try {
 				FileOutputStream stream = new FileOutputStream(output);
 				stream.write(res);
+				stream.flush();
+				stream.close();
+				JOptionPane.showMessageDialog(frame, "decrypt success");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
