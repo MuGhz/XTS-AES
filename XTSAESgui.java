@@ -36,7 +36,10 @@ public class XTSAESgui implements ActionListener{
 	private Button encryptButton;
 	private Button decryptButton;
 	private final int KEY_LENGTH = 64;
-	private Pattern p = Pattern.compile("[a-fA-F0-9]+$");
+	private byte[] data = {};
+	private String input="";
+	private String output ="";
+//	private Pattern p = Pattern.compile("[a-fA-F0-9]+$");
 	
 	/**
 	 * Launch the application.
@@ -144,21 +147,18 @@ public class XTSAESgui implements ActionListener{
 	public void actionPerformed(ActionEvent arg0) {
 		// TODO Auto-generated method stub
 		Object source = arg0.getSource();
-		byte[] data = null;
-		String input;
-		String output = null;
+		
 		if(source == inputFileButton){
 			JFileChooser fc = new JFileChooser();
 			fc.showOpenDialog(frame);
 			File file = fc.getSelectedFile();
 			String[] filePath = file.getAbsolutePath().split("\\.");
 			input = file.getAbsolutePath();
-			output = file.getAbsolutePath().substring(0,file.getAbsolutePath().length() - (filePath[filePath.length-1].length()))+"-output."+filePath[filePath.length-1];
+			output = file.getAbsolutePath().substring(0,file.getAbsolutePath().length() - (filePath[filePath.length-1].length()+1))+"-output."+filePath[filePath.length-1];
 			inputText.setText(input);
 			saveTo.setText(output);
 			try {
 				data = Files.readAllBytes(Paths.get(file.toURI()));
-				System.out.println(Util.toHEX(data));
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -168,10 +168,10 @@ public class XTSAESgui implements ActionListener{
 			String key = keyText.getText();
 			Xts x = new Xts(data,key);
 			byte[] res = x.encrypt();
-			System.out.println(Util.toHEX(res));
 			try {
 				FileOutputStream stream = new FileOutputStream(output);
 				stream.write(res);
+				JOptionPane.showMessageDialog(frame, "encrypt success");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -181,7 +181,6 @@ public class XTSAESgui implements ActionListener{
 			String key = keyText.getText();
 			Xts x = new Xts(data,key);
 			byte[] res = x.decrypt();
-			System.out.println(Util.toHEX(res));
 			try {
 				FileOutputStream stream = new FileOutputStream(output);
 				stream.write(res);
