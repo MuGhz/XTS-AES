@@ -92,7 +92,6 @@ public class Xts{
 			int d = 0;
 			for(int i = 0; i < len-diff; i += 16)	{
 				byte[] block = Arrays.copyOfRange(this.plaintext,i,i+16);
-				System.out.println(Util.toHEX(block));
 				if(i+16+diff >= len)	{
 					byte[] decrypted = XTSAES.decryptBlock(this.key,0,block);
 					int c = 0;
