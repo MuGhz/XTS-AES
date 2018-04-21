@@ -11,6 +11,8 @@ import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -19,6 +21,7 @@ import java.util.regex.Pattern;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 public class XTSAESgui implements ActionListener{
 
@@ -141,33 +144,52 @@ public class XTSAESgui implements ActionListener{
 	public void actionPerformed(ActionEvent arg0) {
 		// TODO Auto-generated method stub
 		Object source = arg0.getSource();
-		
+		byte[] data = null;
+		String input;
+		String output = null;
 		if(source == inputFileButton){
 			JFileChooser fc = new JFileChooser();
 			fc.showOpenDialog(frame);
 			File file = fc.getSelectedFile();
 			String[] filePath = file.getAbsolutePath().split("\\.");
-			inputText.setText(file.getAbsolutePath());
-			saveTo.setText(filePath[filePath.length-2]+"-output."+filePath[filePath.length-1]);
+			input = file.getAbsolutePath();
+			output = file.getAbsolutePath().substring(0,file.getAbsolutePath().length() - (filePath[filePath.length-1].length()))+"-output."+filePath[filePath.length-1];
+			inputText.setText(input);
+			saveTo.setText(output);
 			try {
-				byte[] b = Files.readAllBytes(Paths.get(file.toURI()));
+				data = Files.readAllBytes(Paths.get(file.toURI()));
+				System.out.println(Util.toHEX(data));
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
 		}else if(source == encryptButton){
+			String key = keyText.getText();
+			Xts x = new Xts(data,key);
+			byte[] res = x.encrypt();
+			System.out.println(Util.toHEX(res));
+			try {
+				FileOutputStream stream = new FileOutputStream(output);
+				stream.write(res);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			
 		}else if(source == decryptButton){
+			String key = keyText.getText();
+			Xts x = new Xts(data,key);
+			byte[] res = x.decrypt();
+			System.out.println(Util.toHEX(res));
+			try {
+				FileOutputStream stream = new FileOutputStream(output);
+				stream.write(res);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			
 		}
-	}
-	
-	public boolean hexValidator(String str){
-		Matcher m = p.matcher(str);
-		if(str.length() <64){
-			return false;
-		}
-		return m.find();
 	}
 }
