@@ -16,18 +16,20 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Scanner;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-
+/**
+*GUI untuk implementasi algoritma XTS-AES
+*Galuh Estya A - Geswa Wahid T - Muhammad Ghozi
+*CIS2018
+*/
 public class XTSAESgui implements ActionListener{
 
 	private JFrame frame;
 	private Label titleLabel;
-	private Label keyLabel;
 	private TextField keyText;
 	private TextField saveTo;
 	private TextField inputText;
@@ -35,12 +37,12 @@ public class XTSAESgui implements ActionListener{
 	private Button outputFileButton;
 	private Button encryptButton;
 	private Button decryptButton;
+	private Button keyButton;
 	private final int KEY_LENGTH = 64;
 	private byte[] data = {};
 	private String input="";
 	private String output ="";
-//	private Pattern p = Pattern.compile("[a-fA-F0-9]+$");
-	
+
 	/**
 	 * Launch the application.
 	 */
@@ -95,7 +97,7 @@ public class XTSAESgui implements ActionListener{
 		actionPanel.add(inputFileButton);
 		
 		inputText = new TextField(64);
-		inputText.setEnabled(false);
+		inputText.setEditable(false);
 		inputText.setFont(new Font("Arial Black", Font.BOLD,12));
 		gbc.gridwidth = GridBagConstraints.REMAINDER;
 		gbl.setConstraints(inputText, gbc);
@@ -108,21 +110,20 @@ public class XTSAESgui implements ActionListener{
 		actionPanel.add(outputFileButton);
 		
 		saveTo = new TextField(64);
-		saveTo.setEnabled(false);
+		saveTo.setEditable(false);
 		saveTo.setFont(new Font("Arial Black", Font.BOLD,12));
 		gbc.gridwidth = GridBagConstraints.REMAINDER;
 		gbl.setConstraints(saveTo, gbc);
 		actionPanel.add(saveTo);
 		
-		keyLabel = new Label("Key (in hex)");
-		keyLabel.setAlignment(Label.LEFT);
-		keyLabel.setFont(labelFont);
+		keyButton = new Button("Select Key");
+		keyButton.addActionListener(this);
 		gbc.gridwidth = 1;
-		gbl.setConstraints(keyLabel, gbc);
-		actionPanel.add(keyLabel);
+		gbl.setConstraints(keyButton, gbc);
+		actionPanel.add(keyButton);
 		
 		keyText = new TextField(KEY_LENGTH);
-		keyText.setText("");
+		keyText.setEditable(false);
 		gbc.gridwidth = GridBagConstraints.REMAINDER;
 		gbl.setConstraints(keyText, gbc);
 		actionPanel.add(keyText);
@@ -146,14 +147,12 @@ public class XTSAESgui implements ActionListener{
 	public void actionPerformed(ActionEvent arg0) {
 		// TODO Auto-generated method stub
 		Object source = arg0.getSource();
-		
+
 		if(source == inputFileButton){
 			JFileChooser fc = new JFileChooser();
 			fc.showOpenDialog(frame);
 			File file = fc.getSelectedFile();
-			//String[] filePath = file.getAbsolutePath().split("\\.");
 			input = file.getAbsolutePath();
-			//output = file.getAbsolutePath().substring(0,file.getAbsolutePath().length() - (filePath[filePath.length-1].length()+1))+"-output."+filePath[filePath.length-1];
 			inputText.setText(input);
 			try {
 				data = Files.readAllBytes(Paths.get(file.toURI()));
@@ -199,6 +198,18 @@ public class XTSAESgui implements ActionListener{
 				e.printStackTrace();
 			}
 			
+		}else if(source == keyButton){
+			JFileChooser fc = new JFileChooser();
+			fc.showOpenDialog(frame);
+			File file = fc.getSelectedFile();
+			try {
+				Scanner sc = new Scanner(file);
+				keyText.setText(sc.nextLine());
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 		}
 	}
 }
